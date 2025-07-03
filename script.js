@@ -69,45 +69,115 @@ function handleScroll() {
 
 // Handle wheel events for smoother control
 function handleWheel(event) {
-  event.preventDefault();
+  // Vérifier si l'événement vient de la section festival
+  const festivalSection = document.querySelector(".festival-section");
+  if (festivalSection && festivalSection.contains(event.target)) {
+    // Si on est dans la section festival, laisser faire le scroll naturel
+    return; // Permettre le scroll normal
+  }
 
   const delta = event.deltaY;
-  const scrollStep = window.innerHeight * 0.2; // 20% of viewport height for even faster scroll
+  const scrollStep = window.innerHeight * 0.25; // 25% pour un scroll plus rapide
 
-  if (delta > 0) {
-    // Scroll down
-    window.scrollBy({ top: scrollStep, behavior: "smooth" });
-  } else {
-    // Scroll up
-    window.scrollBy({ top: -scrollStep, behavior: "smooth" });
+  // Phase 1: Navigation entre cartes (0-66%)
+  if (scrollProgress < 66) {
+    event.preventDefault();
+
+    if (delta > 0) {
+      // Scroll down - navigation vers la carte suivante
+      window.scrollBy({ top: scrollStep, behavior: "smooth" });
+    } else {
+      // Scroll up - navigation vers la carte précédente
+      window.scrollBy({ top: -scrollStep, behavior: "smooth" });
+    }
+    return;
+  }
+
+  // Phase 2: Transition vers festival (66-100%)
+  else if (scrollProgress < 100) {
+    event.preventDefault();
+
+    if (delta > 0) {
+      // Scroll down - navigation vers le festival
+      window.scrollBy({ top: scrollStep, behavior: "smooth" });
+    } else {
+      // Scroll up - navigation vers la carte précédente
+      window.scrollBy({ top: -scrollStep, behavior: "smooth" });
+    }
+    return;
+  }
+
+  // Phase 3: Scroll dans les infos festival (100%+)
+  else {
+    // Permettre le scroll normal dans les infos festival
+    // Ne pas prévenir le comportement par défaut
+    return;
   }
 }
 
 // Handle keyboard navigation for scroll
 function handleKeyboardNavigation(event) {
-  const scrollStep = window.innerHeight * 0.3; // 30% of viewport height for even faster keyboard scroll
+  // Vérifier si l'événement vient de la section festival
+  const festivalSection = document.querySelector(".festival-section");
+  if (festivalSection && festivalSection.contains(event.target)) {
+    // Si on est dans la section festival, laisser faire le scroll naturel
+    return; // Permettre le scroll normal
+  }
 
-  switch (event.key) {
-    case "ArrowDown":
-    case "ArrowRight":
-    case "Enter":
-    case " ":
-      event.preventDefault();
-      window.scrollBy({ top: scrollStep, behavior: "smooth" });
-      break;
-    case "ArrowUp":
-    case "ArrowLeft":
-    case "Escape":
-      event.preventDefault();
-      window.scrollBy({ top: -scrollStep, behavior: "smooth" });
-      break;
+  const scrollStep = window.innerHeight * 0.35; // 35% pour un scroll plus rapide
+
+  // Phase 1: Navigation entre cartes (0-66%)
+  if (scrollProgress < 66) {
+    switch (event.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+      case "Enter":
+      case " ":
+        event.preventDefault();
+        window.scrollBy({ top: scrollStep, behavior: "smooth" });
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+      case "Escape":
+        event.preventDefault();
+        window.scrollBy({ top: -scrollStep, behavior: "smooth" });
+        break;
+    }
+    return;
+  }
+
+  // Phase 2: Transition vers festival (66-100%)
+  else if (scrollProgress < 100) {
+    switch (event.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+      case "Enter":
+      case " ":
+        event.preventDefault();
+        window.scrollBy({ top: scrollStep, behavior: "smooth" });
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+      case "Escape":
+        event.preventDefault();
+        window.scrollBy({ top: -scrollStep, behavior: "smooth" });
+        break;
+    }
+    return;
+  }
+
+  // Phase 3: Scroll dans les infos festival (100%+)
+  else {
+    // Laisser le scroll normal dans les infos festival
+    // Ne pas prévenir le comportement par défaut
+    return;
   }
 }
 
 // Initialize scroll stages and set up the scroll environment
 function initializeScrollStages() {
   // Set up the document for scroll-based navigation
-  document.body.style.height = "250vh"; // 2.5x viewport height for even faster scrolling
+  document.body.style.height = "500vh"; // 5x viewport height pour permettre le scroll dans les infos
   document.documentElement.style.scrollBehavior = "smooth";
 
   // Initialize all stages as visible but positioned for scroll
@@ -255,8 +325,14 @@ function updateStageBasedOnScroll() {
     // Show France map - always visible in phase 1, grows with scroll
     if (franceMap) {
       franceMap.style.opacity = "1";
-      franceMap.style.transform = `scale(${1 + phase1Progress * 0.3})`; // Grows more for faster visual feedback
-      franceMap.style.transition = "all 0.1s ease-out";
+      franceMap.style.transform = `scale(${1 + phase1Progress * 2.5})`; // Grows much faster for instant feedback
+      franceMap.style.transition = "all 0.02s ease-out";
+    }
+
+    // Réinitialiser le flag festival si on remonte
+    if (hasScrolledToFestival) {
+      hasScrolledToFestival = false;
+      console.log("🔄 Retour en phase 1 - Flag festival réinitialisé");
     }
 
     // Hide other elements
@@ -304,15 +380,15 @@ function updateStageBasedOnScroll() {
     // Hide France map with smooth fade-out
     if (franceMap) {
       franceMap.style.opacity = Math.max(0, 1 - phase2Progress);
-      franceMap.style.transform = `scale(${1.3 + phase2Progress * 0.4})`; // Grows more dramatically before disappearing
-      franceMap.style.transition = "all 0.1s ease-out";
+      franceMap.style.transform = `scale(${3.5 + phase2Progress * 1.5})`; // Grows even more dramatically before disappearing
+      franceMap.style.transition = "all 0.02s ease-out";
     }
 
     // Show Region map with smooth fade-in
     if (regionMap) {
       regionMap.style.opacity = Math.min(1, phase2Progress);
-      regionMap.style.transform = `scale(${0.8 + phase2Progress * 0.5})`; // Grows more noticeably as it appears
-      regionMap.style.transition = "all 0.1s ease-out";
+      regionMap.style.transform = `scale(${0.8 + phase2Progress * 2.2})`; // Grows much faster and more noticeably
+      regionMap.style.transition = "all 0.02s ease-out";
     }
 
     // Hide festival section
@@ -357,22 +433,26 @@ function updateStageBasedOnScroll() {
       franceMap.style.transition = "all 0.1s ease-out";
     }
 
-    // Move Region map to left half with smooth transition
+    // Move Region map to left quarter with smooth transition
     if (regionMap) {
-      regionMap.style.opacity = Math.max(0.4, 1 - phase3Progress * 0.6); // Keep some visibility
+      regionMap.style.opacity = Math.max(0.6, 1 - phase3Progress * 0.4); // Keep more visibility
       regionMap.style.transform = `scale(${
-        1.5 - phase3Progress * 0.3
-      }) translateX(${-70 * phase3Progress}%)`; // Move further left and scale up
-      regionMap.style.transition = "all 0.1s ease-out";
+        3.0 + phase3Progress * 0.5
+      }) translateX(${-50 * phase3Progress}%)`; // Continue from scale 3.0 and grow more, overflow on left
+      regionMap.style.transition = "all 0.02s ease-out";
     }
 
-    // Show festival section with smooth slide-in
+    // Show festival section with smooth slide-in to center-right
     if (festivalSection) {
       festivalSection.style.opacity = Math.min(1, phase3Progress);
       festivalSection.style.transform = `translateX(${
         50 - phase3Progress * 50
-      }%)`; // Start from center and move to right
-      festivalSection.style.transition = "all 0.1s ease-out";
+      }%)`; // Start from 50% and move to center-right
+      festivalSection.style.transition = "all 0.02s ease-out";
+
+      // Permettre le scroll dans la section festival
+      festivalSection.style.overflowY = "auto";
+      festivalSection.style.maxHeight = "100vh";
     }
 
     // Marquer qu'on a scrollé vers le festival et masquer toutes les notes
@@ -381,6 +461,16 @@ function updateStageBasedOnScroll() {
     console.log(
       "🎪 Phase festival atteinte - Notes masquées définitivement jusqu'au scroll vers le haut"
     );
+
+    // Nettoyer les notes superposées
+    cleanupOverlappingNotes();
+
+    // Masquer le scroll hint
+    const scrollHint = document.getElementById("scrollHint");
+    if (scrollHint) {
+      scrollHint.style.opacity = "0";
+      scrollHint.style.pointerEvents = "none";
+    }
 
     // Masquer complètement les anciens conteneurs de notes
     if (stage1Notes) {
@@ -526,7 +616,7 @@ function setupNoteClickListeners() {
         activeNotes.delete(noteId);
         console.log(`🎯 Note dynamique supprimée: ${noteId}`);
 
-        // Régénérer seulement si conditions réunies
+        // Régénérer depuis le point rouge si conditions réunies
         if (
           !hasScrolledToFestival &&
           scrollProgress < 66 &&
@@ -534,8 +624,10 @@ function setupNoteClickListeners() {
         ) {
           setTimeout(() => {
             createDynamicNote();
-            console.log(`🔄 Nouvelle note dynamique générée après clic`);
-          }, 500 + Math.random() * 1000); // 0.5-1.5s délai
+            console.log(
+              `🔄 Nouvelle note dynamique générée depuis le point rouge après clic`
+            );
+          }, 300 + Math.random() * 700); // 0.3-1s délai plus rapide
         }
       }
     }, 500);
@@ -570,7 +662,7 @@ function setupNoteClickListeners() {
   // 🎯 SYSTÈME DE GÉNÉRATION DYNAMIQUE DE NOTES AVEC CYCLE DE VIE
   let activeNotes = new Map(); // Stockage des notes actives avec leurs timers
   let noteCounter = 0;
-  const MAX_NOTES = 5; // Nombre maximum de notes simultanées
+  const MAX_NOTES = 8; // Nombre maximum de notes simultanées augmenté
   let hasScrolledToFestival = false; // Flag pour tracking si on a déjà scrollé vers les infos festival
 
   // Zones interdites (cartes visibles) - adaptées selon la phase
@@ -580,19 +672,19 @@ function setupNoteClickListeners() {
     // Phase 1: Carte de France au centre
     if (scrollProgress <= 33) {
       zones.push({
-        top: 10,
-        left: 10,
-        width: 80,
-        height: 80, // Zone centrale large pour la carte France
+        top: 15,
+        left: 15,
+        width: 70,
+        height: 70, // Zone centrale réduite pour permettre plus de notes
       });
     }
     // Phase 2: Carte de région au centre
     else if (scrollProgress <= 66) {
       zones.push({
-        top: 10,
-        left: 10,
-        width: 80,
-        height: 80, // Zone centrale large pour la carte région
+        top: 15,
+        left: 15,
+        width: 70,
+        height: 70, // Zone centrale réduite pour permettre plus de notes
       });
     }
     // Phase 3: Carte de région à gauche + infos à droite
@@ -600,14 +692,14 @@ function setupNoteClickListeners() {
       zones.push({
         top: 5,
         left: 5,
-        width: 45,
-        height: 90, // Zone gauche pour la carte région
+        width: 40,
+        height: 90, // Zone gauche réduite pour la carte région
       });
       zones.push({
         top: 5,
-        left: 50,
-        width: 45,
-        height: 90, // Zone droite pour les infos
+        left: 55,
+        width: 40,
+        height: 90, // Zone droite réduite pour les infos
       });
     }
 
@@ -627,30 +719,109 @@ function setupNoteClickListeners() {
     });
   }
 
-  // Générer une position aléatoire valide (éviter les cartes)
+  // Générer une position depuis le point rouge avec direction dynamique
   function generateSafePosition() {
-    let attempts = 0;
-    let position;
+    // Position du point rouge (Saint Saturnin) selon la phase
+    let redDotPosition;
 
-    do {
-      const randomTop = Math.random() * 80 + 10; // 10% à 90%
-      const randomLeft = Math.random() * 80 + 10; // 10% à 90%
-      position = { top: randomTop, left: randomLeft };
-      attempts++;
-    } while (isPositionForbidden(position.top, position.left) && attempts < 50); // Plus d'essais
+    if (scrollProgress <= 33) {
+      // Phase 1: Point rouge sur la carte de France (position approximative)
+      redDotPosition = { top: 45, left: 50 }; // Centre de la France
+    } else if (scrollProgress <= 66) {
+      // Phase 2: Point rouge sur la carte de région (position exacte de Saint Saturnin)
+      redDotPosition = { top: 50, left: 32.5 }; // Position de Saint Saturnin sur la carte région
+    } else {
+      // Phase 3: Point rouge toujours sur la carte de région (à gauche)
+      redDotPosition = { top: 50, left: 22.5 }; // Position ajustée pour la carte à gauche
+    }
 
-    // Si on n'a pas trouvé de position sûre, utiliser les coins
-    if (attempts >= 50) {
-      const corners = [
-        { top: 5, left: 5 },
-        { top: 5, left: 85 },
-        { top: 85, left: 5 },
-        { top: 85, left: 85 },
-      ];
-      position = corners[Math.floor(Math.random() * corners.length)];
+    // Générer une direction aléatoire depuis le point rouge
+    const angle = Math.random() * 2 * Math.PI; // 0 à 2π radians
+    const distance = 15 + Math.random() * 25; // Distance de 15% à 40%
+
+    // Calculer la nouvelle position
+    const deltaX = Math.cos(angle) * distance;
+    const deltaY = Math.sin(angle) * distance;
+
+    let position = {
+      top: redDotPosition.top + deltaY,
+      left: redDotPosition.left + deltaX,
+    };
+
+    // Vérifier que la position est dans les limites de l'écran
+    position.top = Math.max(5, Math.min(95, position.top));
+    position.left = Math.max(5, Math.min(95, position.left));
+
+    // Vérifier si la position est dans une zone interdite
+    if (isPositionForbidden(position.top, position.left)) {
+      // Si interdite, ajuster vers l'extérieur
+      const adjustedAngle = angle + Math.PI; // Direction opposée
+      const adjustedDistance = 30 + Math.random() * 20; // Plus loin
+      const adjustedDeltaX = Math.cos(adjustedAngle) * adjustedDistance;
+      const adjustedDeltaY = Math.sin(adjustedAngle) * adjustedDistance;
+
+      position = {
+        top: Math.max(5, Math.min(95, redDotPosition.top + adjustedDeltaY)),
+        left: Math.max(5, Math.min(95, redDotPosition.left + adjustedDeltaX)),
+      };
     }
 
     return position;
+  }
+
+  // Vérifier si une position est trop proche d'autres notes (tolérance augmentée)
+  function isTooCloseToOtherNotes(top, left, minDistance) {
+    for (const [noteId, noteData] of activeNotes) {
+      const distance = Math.sqrt(
+        Math.pow(top - noteData.position.top, 2) +
+          Math.pow(left - noteData.position.left, 2)
+      );
+      if (distance < minDistance) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fonction pour nettoyer les notes trop proches existantes (désactivée pour permettre 8 notes)
+  function cleanupOverlappingNotes() {
+    // Désactivé pour permettre plus de notes visibles
+    return;
+
+    const notesToRemove = [];
+    const minDistance = 15; // Distance minimale réduite pour permettre plus de notes
+
+    for (const [noteId1, noteData1] of activeNotes) {
+      for (const [noteId2, noteData2] of activeNotes) {
+        if (noteId1 !== noteId2) {
+          const distance = Math.sqrt(
+            Math.pow(noteData1.position.top - noteData2.position.top, 2) +
+              Math.pow(noteData1.position.left - noteData2.position.left, 2)
+          );
+          if (distance < minDistance) {
+            // Garder la note la plus récente (ID plus grand)
+            const noteToRemove =
+              parseInt(noteId1.split("-")[2]) < parseInt(noteId2.split("-")[2])
+                ? noteId1
+                : noteId2;
+            if (!notesToRemove.includes(noteToRemove)) {
+              notesToRemove.push(noteToRemove);
+            }
+          }
+        }
+      }
+    }
+
+    // Supprimer les notes en conflit
+    notesToRemove.forEach((noteId) => {
+      removeNote(noteId);
+    });
+
+    if (notesToRemove.length > 0) {
+      console.log(
+        `🧹 Nettoyage: ${notesToRemove.length} notes superposées supprimées`
+      );
+    }
   }
 
   // Créer une nouvelle note dynamique
@@ -675,51 +846,74 @@ function setupNoteClickListeners() {
     note.id = noteId;
     note.textContent = ["♪", "♫", "♩", "♬"][Math.floor(Math.random() * 4)];
 
-    // Position sûre (éviter les cartes)
-    const position = generateSafePosition();
+    // Position du point rouge (Saint Saturnin) selon la phase
+    let redDotPosition;
+    if (scrollProgress <= 33) {
+      redDotPosition = { top: 45, left: 50 }; // Centre de la France
+    } else if (scrollProgress <= 66) {
+      redDotPosition = { top: 50, left: 32.5 }; // Position de Saint Saturnin sur la carte région
+    } else {
+      redDotPosition = { top: 50, left: 22.5 }; // Position ajustée pour la carte à gauche
+    }
+
+    // Ne pas nettoyer automatiquement - laisser les notes coexister
+    // cleanupOverlappingNotes();
 
     // Opacité garantie entre 75% et 100%
     const opacity = Math.random() * 0.25 + 0.75; // 0.75 à 1.0
 
-    // Styles avec priorité absolue - POSITION FIXE pour éviter le scroll
+    // Commencer depuis le point rouge
     note.style.setProperty("position", "fixed", "important");
-    note.style.setProperty("top", `${position.top}%`, "important");
-    note.style.setProperty("left", `${position.left}%`, "important");
-    note.style.setProperty("opacity", opacity.toString(), "important");
+    note.style.setProperty("top", `${redDotPosition.top}%`, "important");
+    note.style.setProperty("left", `${redDotPosition.left}%`, "important");
+    note.style.setProperty("opacity", "0", "important"); // Commencer invisible
     note.style.setProperty("pointer-events", "auto", "important");
     note.style.setProperty("cursor", "pointer", "important");
     note.style.setProperty("z-index", "9999", "important");
-    note.style.setProperty("font-size", "2rem", "important");
-    note.style.setProperty("color", "rgba(255, 255, 255, 0.9)", "important");
+    note.style.setProperty("font-size", "3rem", "important");
+    note.style.setProperty("color", "#d4af37", "important");
     note.style.setProperty(
       "text-shadow",
       "2px 2px 4px rgba(0, 0, 0, 0.8)",
       "important"
     );
-    note.style.setProperty(
-      "animation",
-      "floatNoteSubtle 4s ease-in-out infinite",
-      "important"
-    );
+    note.style.setProperty("transition", "all 0.5s ease-out", "important");
 
     // Ajouter au DOM
     document.body.appendChild(note);
 
-    // Pas de timer automatique - les notes ne disparaissent que lors du clic
-    console.log(`🎵 Note ${noteId} créée - disparition uniquement par clic`);
+    // Animation d'apparition depuis le point rouge
+    setTimeout(() => {
+      const finalPosition = generateSafePosition();
+      note.style.setProperty("opacity", opacity.toString(), "important");
+      note.style.setProperty("top", `${finalPosition.top}%`, "important");
+      note.style.setProperty("left", `${finalPosition.left}%`, "important");
+
+      // Ajouter l'animation de flottement après l'apparition
+      setTimeout(() => {
+        note.style.setProperty(
+          "animation",
+          "floatNoteToTop 6s ease-in-out infinite",
+          "important"
+        );
+      }, 500);
+    }, 100);
 
     // Stocker la note active
     activeNotes.set(noteId, {
       element: note,
-      timer: null, // Pas de timer automatique
-      position: position,
+      timer: null,
+      position: redDotPosition, // Position initiale (point rouge)
+      finalPosition: null, // Sera défini après animation
       opacity: opacity,
     });
 
     console.log(
-      `🎵 Note créée: "${note.textContent}" à (${position.top.toFixed(
+      `🎵 Note créée depuis le point rouge: "${
+        note.textContent
+      }" vers (${redDotPosition.top.toFixed(1)}%, ${redDotPosition.left.toFixed(
         1
-      )}%, ${position.left.toFixed(1)}%) opacity=${opacity.toFixed(3)}`
+      )}%)`
     );
 
     return noteId;
@@ -735,8 +929,11 @@ function setupNoteClickListeners() {
     const notesToCreate = Math.max(0, MAX_NOTES - activeNotes.size);
     console.log(`🎯 Initialisation: ${notesToCreate} notes à créer`);
 
+    // Créer les notes avec un délai pour éviter les conflits
     for (let i = 0; i < notesToCreate; i++) {
-      createDynamicNote();
+      setTimeout(() => {
+        createDynamicNote();
+      }, i * 200); // 200ms entre chaque note
     }
   }
 
@@ -787,6 +984,63 @@ function setupNoteClickListeners() {
 
   // Démarrer le système après 1 seconde
   setTimeout(initializeNoteSystem, 1000);
+
+  // Ajouter un événement de scroll spécifique à la section festival
+  document.addEventListener("DOMContentLoaded", function () {
+    const festivalSection = document.querySelector(".festival-section");
+    if (festivalSection) {
+      // Événement de scroll pour détecter le scroll
+      festivalSection.addEventListener("scroll", function (e) {
+        console.log("🎪 Scroll dans la section festival:", e.target.scrollTop);
+      });
+    }
+  });
+
+  // Fonction pour vérifier si les notes sortent de l'écran et les faire réapparaître
+  function checkNotesOutOfBounds() {
+    activeNotes.forEach((noteData, noteId) => {
+      const note = noteData.element;
+      if (note && note.parentNode) {
+        const rect = note.getBoundingClientRect();
+        const isOutOfBounds =
+          rect.top < -50 ||
+          rect.bottom > window.innerHeight + 50 ||
+          rect.left < -50 ||
+          rect.right > window.innerWidth + 50;
+
+        if (isOutOfBounds) {
+          console.log(
+            `🎵 Note ${noteId} sort de l'écran, régénération depuis le point rouge`
+          );
+
+          // Supprimer la note actuelle
+          activeNotes.delete(noteId);
+          if (note.parentNode) {
+            note.remove();
+          }
+
+          // Régénérer depuis le point rouge si conditions réunies
+          if (
+            !hasScrolledToFestival &&
+            scrollProgress < 66 &&
+            activeNotes.size < MAX_NOTES
+          ) {
+            setTimeout(() => {
+              createDynamicNote();
+            }, 200 + Math.random() * 500);
+          }
+        }
+      }
+    });
+  }
+
+  // Vérifier toutes les 2 secondes
+  setInterval(checkNotesOutOfBounds, 2000);
+
+  // Debug: Afficher le nombre de notes actives toutes les 5 secondes
+  setInterval(() => {
+    console.log(`🎵 Notes actives: ${activeNotes.size}/${MAX_NOTES}`);
+  }, 5000);
 
   // 🎯 FONCTIONS DE GESTION DES NOTES SELON LE SCROLL
   function enableDynamicNotes() {
