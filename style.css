@@ -1,0 +1,1040 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  color: #b6b7bc;
+  background: #0f2d63;
+  overflow: hidden;
+  min-height: 100dvh;
+}
+
+/* Header Bar */
+.header-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #af9542;
+  z-index: 1000;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.8s ease;
+}
+
+.header-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.header-logo {
+  margin-right: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.header-logo img {
+  height: 50px;
+  width: auto;
+  border-radius: 8px;
+}
+
+.header-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #102e60;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Radial Spotlight for Stages 1 & 2 */
+/* Stage 3 Active State - Hide header for clean reading */
+.stage3-active .header-bar {
+  opacity: 0;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  margin-top: 70px;
+}
+
+/* Stage Management */
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100dvh - 70px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: scale(0.8);
+  pointer-events: none; /* Allow clicks to pass through to notes */
+}
+
+/* ✨ CONFETTI ANIMATION SIMPLE ET VISIBLE ✨ */
+.confetti {
+  position: fixed !important;
+  pointer-events: none !important;
+  z-index: 99999 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 10px currentColor !important;
+  animation: confettiExplode 2s ease-out forwards !important;
+}
+
+@keyframes confettiExplode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(var(--deltaX, 50px), var(--deltaY, -50px))
+      rotate(180deg) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--deltaX, 50px) * 1.5),
+        calc(var(--deltaY, -50px) * 1.5 + 100px)
+      )
+      rotate(360deg) scale(0.5);
+  }
+}
+
+.stage.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+/* Scroll indicator (optional) */
+.scroll-indicator {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 4px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  z-index: 100;
+}
+
+.scroll-indicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--scroll-progress, 0%);
+  background: linear-gradient(to bottom, #ffd700, #ff6b6b);
+  border-radius: 2px;
+  transition: height 0.1s ease-out;
+}
+
+/* Scroll hint */
+.scroll-hint {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  opacity: 1;
+  animation: fadeInOut 4s ease-in-out;
+  pointer-events: none;
+}
+
+.scroll-hint-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scroll-hint-icon {
+  font-size: 2rem;
+  color: #ffd700;
+  animation: bounce 2s infinite;
+}
+
+.scroll-hint-text {
+  color: #b6b7bc;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+/* Stage 1: France Map */
+.hero-section {
+  text-align: center;
+  color: #b6b7bc;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+  pointer-events: auto; /* Re-enable interactions for content */
+}
+
+.france-map-container {
+  cursor: pointer;
+  animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.france-map {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: transparent;
+  border-radius: 20px;
+  transition: all 0.1s ease-out;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+.france-map:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.france-map:hover .stage1-notes .note {
+  animation-duration: 3s;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+}
+
+.france-svg {
+  width: 80vw;
+  height: auto;
+  max-height: 80vh;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.map-label {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Stage 2: Region Map */
+.region-section {
+  text-align: center;
+  color: #b6b7bc;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+  pointer-events: auto; /* Re-enable interactions for content */
+}
+
+.region-map-container {
+  cursor: pointer;
+}
+
+.region-map {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: transparent;
+  border-radius: 20px;
+  transition: all 0.1s ease-out;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+.region-map:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.region-map:hover .stage2-notes .note {
+  animation-duration: 1.5s;
+  color: rgba(255, 255, 255, 1);
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6));
+  font-size: 2rem;
+}
+
+.region-svg {
+  width: 70vw;
+  height: auto;
+  max-height: 70vh;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.town-label {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(231, 76, 60, 0.9);
+  color: #b6b7bc;
+  padding: 8px 16px;
+  border-radius: 15px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Stage 3: Festival Presentation */
+.festival-section {
+  width: 50%;
+  max-width: 600px;
+  padding: 1.5rem;
+  color: #b6b7bc;
+  overflow-y: auto;
+  max-height: calc(100dvh - 70px - 3rem);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  pointer-events: auto; /* Re-enable interactions for content */
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.festival-section::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.festival-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: start;
+}
+
+.festival-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.town-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.festival-image:hover .town-image {
+  transform: scale(1.05);
+}
+
+.festival-info {
+  padding: 1rem;
+}
+
+.festival-name {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #102e60;
+}
+
+.festival-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.festival-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detail-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.detail-item h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.detail-item p {
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.festival-description {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.festival-description h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.festival-description p {
+  margin-bottom: 1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.cta-section {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cta-button:not(.secondary) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #b6b7bc;
+}
+
+.cta-button.secondary {
+  background: transparent;
+  color: #b6b7bc;
+  border: 2px solid rgba(182, 183, 188, 0.5);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.cta-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Notes de musique flottantes */
+.floating-notes {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  pointer-events: auto !important;
+  overflow: hidden;
+  z-index: 50;
+  transition: opacity 0.1s ease-out;
+}
+
+.note {
+  position: absolute;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: auto !important;
+  z-index: 100;
+  transition: all 0.1s ease-out;
+  cursor: pointer;
+}
+
+/* 🎲 DÉSACTIVER TOUTES LES POSITIONS FIXES - CONTRÔLE JAVASCRIPT RANDOMISÉ */
+.stage1-notes .note,
+.stage2-notes .note {
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+.note:hover {
+  animation-play-state: paused !important;
+  filter: brightness(1.5) saturate(1.3)
+    drop-shadow(0 0 10px rgba(127, 101, 70, 0.8));
+  transform: scale(1.2) !important;
+  color: #7f6546 !important;
+}
+
+.note.clicked {
+  animation: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.note-clicked {
+  animation: none !important;
+  transform: scale(2) rotate(180deg) !important;
+  opacity: 0 !important;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out !important;
+  pointer-events: none !important;
+  z-index: 10000 !important;
+  filter: brightness(2) drop-shadow(0 0 20px currentColor) !important;
+}
+
+/* Fallback for inline styles */
+.note[style*="animation: none"] {
+  animation: none !important;
+}
+
+/* Interactive states for notes */
+.note:not(.clicked) {
+  transition: all 0.1s ease-out;
+}
+
+.note[style*="pointer-events: none"] {
+  cursor: default !important;
+  filter: grayscale(0.3) brightness(0.8);
+}
+
+.note[style*="pointer-events: auto"] {
+  cursor: pointer !important;
+  filter: none;
+}
+
+.note[style*="pointer-events: auto"]:hover {
+  filter: brightness(1.4) saturate(1.3)
+    drop-shadow(0 0 12px rgba(127, 101, 70, 0.8));
+  color: #7f6546 !important;
+}
+
+/* Stage 1 Notes - Festive Jazz Style */
+.stage1-notes .note {
+  animation: floatNoteSubtle 5s ease-in-out infinite;
+  font-size: 2.2rem;
+  text-shadow: 0 0 15px currentColor;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.stage1-notes .note:nth-child(4n + 1) {
+  color: #ffd700;
+} /* Gold */
+.stage1-notes .note:nth-child(4n + 2) {
+  color: #ff6b6b;
+} /* Coral */
+.stage1-notes .note:nth-child(4n + 3) {
+  color: #4ecdc4;
+} /* Turquoise */
+.stage1-notes .note:nth-child(4n + 4) {
+  color: #45b7d1;
+} /* Blue */
+
+.stage1-notes .note:hover {
+  transform: scale(1.3) rotate(15deg);
+  filter: brightness(1.3);
+  color: #7f6546 !important;
+}
+
+/* ⚠️ POSITIONS FIXES DÉSACTIVÉES - CONTRÔLE JAVASCRIPT RANDOMISÉ ⚠️ */
+/* Notes disposées aléatoirement par JavaScript - seules les animations sont conservées */
+.stage1-notes .note-1 {
+  animation-delay: 0s;
+  animation-duration: 5s;
+}
+
+.stage1-notes .note-2 {
+  animation-delay: 1s;
+  animation-duration: 6s;
+}
+
+.stage1-notes .note-3 {
+  animation-delay: 2s;
+  animation-duration: 5.5s;
+}
+
+.stage1-notes .note-4 {
+  animation-delay: 3s;
+  animation-duration: 6.5s;
+}
+
+.stage1-notes .note-5 {
+  animation-delay: 4s;
+  animation-duration: 5.8s;
+}
+
+.stage1-notes .note-6 {
+  animation-delay: 5s;
+  animation-duration: 6.2s;
+}
+
+.stage1-notes .note-7 {
+  animation-delay: 6s;
+  animation-duration: 5.2s;
+}
+
+.stage1-notes .note-8 {
+  animation-delay: 7s;
+  animation-duration: 6.8s;
+}
+
+.stage1-notes .note-9 {
+  animation-delay: 8s;
+  animation-duration: 5.5s;
+}
+
+.stage1-notes .note-10 {
+  animation-delay: 9s;
+  animation-duration: 6.3s;
+}
+
+.stage1-notes .note-11 {
+  animation-delay: 10s;
+  animation-duration: 5.9s;
+}
+
+.stage1-notes .note-12 {
+  animation-delay: 11s;
+  animation-duration: 6.1s;
+}
+
+/* Stage 2 Notes - Intense Jazz Festival */
+.stage2-notes .note {
+  animation: floatNoteIntense 2.5s ease-in-out infinite,
+    pulseNote 0.8s ease-in-out infinite;
+  font-size: 2.8rem;
+  text-shadow: 0 0 20px currentColor;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.stage2-notes .note:nth-child(4n + 1) {
+  color: #ff6b35;
+} /* Orange */
+.stage2-notes .note:nth-child(4n + 2) {
+  color: #7b68ee;
+} /* Purple */
+.stage2-notes .note:nth-child(4n + 3) {
+  color: #32cd32;
+} /* Lime */
+.stage2-notes .note:nth-child(4n + 4) {
+  color: #ffd700;
+} /* Gold */
+
+.stage2-notes .note:hover {
+  transform: scale(1.4) rotate(20deg);
+  filter: brightness(1.4) saturate(1.3);
+  color: #7f6546 !important;
+}
+
+/* Notes disposées aléatoirement par JavaScript - seules les animations sont conservées */
+.stage2-notes .note-1 {
+  animation-delay: 0s;
+  animation-duration: 2s;
+}
+
+.stage2-notes .note-2 {
+  animation-delay: 0.2s;
+  animation-duration: 2.5s;
+}
+
+.stage2-notes .note-3 {
+  animation-delay: 0.4s;
+  animation-duration: 2.2s;
+}
+
+.stage2-notes .note-4 {
+  animation-delay: 0.6s;
+  animation-duration: 2.8s;
+}
+
+.stage2-notes .note-5 {
+  animation-delay: 0.8s;
+  animation-duration: 2.3s;
+}
+
+.stage2-notes .note-6 {
+  animation-delay: 1s;
+  animation-duration: 2.6s;
+}
+
+.stage2-notes .note-7 {
+  animation-delay: 1.2s;
+  animation-duration: 2.1s;
+}
+
+.stage2-notes .note-8 {
+  animation-delay: 1.4s;
+  animation-duration: 2.9s;
+}
+
+.stage2-notes .note-9 {
+  animation-delay: 1.6s;
+  animation-duration: 2.4s;
+}
+
+.stage2-notes .note-10 {
+  animation-delay: 1.8s;
+  animation-duration: 2.7s;
+}
+
+.stage2-notes .note-11 {
+  animation-delay: 2s;
+  animation-duration: 2.2s;
+}
+
+.stage2-notes .note-12 {
+  animation-delay: 2.2s;
+  animation-duration: 2.6s;
+}
+
+/* Animations */
+@keyframes floatNoteSubtle {
+  0% {
+    transform: translate(0px, 15px) rotate(0deg) scale(0.9);
+  }
+  20% {
+    transform: translate(8px, -5px) rotate(5deg) scale(1);
+  }
+  40% {
+    transform: translate(-3px, -12px) rotate(-3deg) scale(1.1);
+  }
+  60% {
+    transform: translate(5px, -18px) rotate(7deg) scale(0.95);
+  }
+  80% {
+    transform: translate(-8px, -25px) rotate(-2deg) scale(0.9);
+  }
+  100% {
+    transform: translate(-12px, -30px) rotate(-5deg) scale(0.85);
+  }
+}
+
+@keyframes floatNoteIntense {
+  0% {
+    transform: translate(0px, 25px) rotate(0deg) scale(0.7);
+  }
+  12% {
+    transform: translate(12px, -15px) rotate(15deg) scale(1.2);
+  }
+  25% {
+    transform: translate(-8px, -25px) rotate(-12deg) scale(1.3);
+  }
+  38% {
+    transform: translate(15px, -20px) rotate(20deg) scale(1.1);
+  }
+  50% {
+    transform: translate(-10px, -35px) rotate(-18deg) scale(1.4);
+  }
+  62% {
+    transform: translate(8px, -40px) rotate(25deg) scale(1.2);
+  }
+  75% {
+    transform: translate(-12px, -50px) rotate(-20deg) scale(1.5);
+  }
+  88% {
+    transform: translate(-5px, -60px) rotate(-15deg) scale(1.3);
+  }
+  100% {
+    transform: translate(5px, -65px) rotate(5deg) scale(0.8);
+  }
+}
+
+@keyframes pulseNote {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Confetti Animation */
+.confetti {
+  position: absolute;
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(var(--deltaX, 0), var(--deltaY, 0)) rotate(180deg)
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--deltaX, 0) * 1.5),
+        calc(var(--deltaY, 0) * 1.5 + 100px)
+      )
+      rotate(360deg) scale(0.2);
+  }
+}
+
+.confetti-1 {
+  animation: confettiFall 1s ease-out forwards;
+}
+.confetti-2 {
+  animation: confettiFall 1.2s ease-out forwards;
+}
+.confetti-3 {
+  animation: confettiFall 1.4s ease-out forwards;
+}
+.confetti-4 {
+  animation: confettiFall 1.6s ease-out forwards;
+}
+.confetti-5 {
+  animation: confettiFall 1.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-bar {
+    height: 60px;
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+  }
+
+  .header-logo {
+    font-size: 1.5rem;
+  }
+
+  .container {
+    margin-top: 60px;
+  }
+
+  .stage {
+    height: calc(100dvh - 60px);
+  }
+
+  .festival-header {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .festival-section {
+    padding: 1rem;
+    max-height: calc(100dvh - 60px - 2rem);
+  }
+
+  .france-svg {
+    width: 200px;
+    height: auto;
+    max-height: 200px;
+  }
+
+  .region-svg {
+    width: 240px;
+    height: auto;
+    max-height: 180px;
+  }
+
+  .cta-section {
+    flex-direction: column;
+  }
+
+  .cta-button {
+    width: 100%;
+  }
+
+  .stage1-notes .note {
+    font-size: 1.8rem;
+  }
+
+  .stage1-notes .note-9,
+  .stage1-notes .note-10,
+  .stage1-notes .note-11,
+  .stage1-notes .note-12 {
+    font-size: 1.6rem;
+  }
+
+  .stage2-notes .note {
+    font-size: 2.2rem;
+  }
+
+  .scroll-hint {
+    bottom: 80px;
+  }
+
+  .scroll-hint-content {
+    padding: 15px;
+  }
+
+  .scroll-hint-icon {
+    font-size: 1.5rem;
+  }
+
+  .scroll-hint-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-bar {
+    height: 50px;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+  }
+
+  .header-logo {
+    font-size: 1.2rem;
+  }
+
+  .header-content {
+    padding: 0 1rem;
+  }
+
+  .container {
+    margin-top: 50px;
+  }
+
+  .stage {
+    height: calc(100dvh - 50px);
+  }
+
+  .scroll-indicator {
+    bottom: 20px;
+    right: 20px;
+    height: 80px;
+  }
+
+  .france-svg {
+    width: 150px;
+    height: auto;
+    max-height: 150px;
+  }
+
+  .region-svg {
+    width: 180px;
+    height: auto;
+    max-height: 135px;
+  }
+
+  .festival-name {
+    font-size: 2rem;
+  }
+
+  .festival-section {
+    max-height: calc(100dvh - 50px - 2rem);
+  }
+
+  .stage1-notes .note {
+    font-size: 1.6rem;
+  }
+
+  .stage1-notes .note-9,
+  .stage1-notes .note-10,
+  .stage1-notes .note-11,
+  .stage1-notes .note-12 {
+    font-size: 1.4rem;
+  }
+
+  .stage2-notes .note {
+    font-size: 2rem;
+  }
+
+  .scroll-hint {
+    bottom: 60px;
+  }
+
+  .scroll-hint-content {
+    padding: 12px;
+  }
+
+  .scroll-hint-icon {
+    font-size: 1.2rem;
+  }
+
+  .scroll-hint-text {
+    font-size: 0.8rem;
+  }
+}
